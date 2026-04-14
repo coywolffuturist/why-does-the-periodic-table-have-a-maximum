@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Does the Periodic Table Have a Maximum?</title>
+
+    <!-- Reveal.js CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --cyan-accent: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.3);
+            --white: #ffffff;
+            --gray-light: #a0a0a0;
+            --orange-warning: #ff6b35;
+            --green-stable: #00ff88;
+        }
+
+        .reveal {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+        }
+
+        .reveal .slides {
+            text-align: left;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            color: var(--white);
+            text-transform: none;
+        }
+
+        .reveal h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 40px var(--cyan-glow);
+        }
+
+        .reveal h2 {
+            font-size: 1.8em;
+            color: var(--cyan-accent);
+            margin-bottom: 0.5em;
+        }
+
+        .reveal p, .reveal li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: var(--gray-light);
+        }
+
+        .reveal .accent {
+            color: var(--cyan-accent);
+            font-weight: 500;
+        }
+
+        .reveal .warning {
+            color: var(--orange-warning);
+        }
+
+        .reveal .stable {
+            color: var(--green-stable);
+        }
+
+        /* Atomic symbol styling */
+        .atom-symbol {
+            font-size: 4em;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px var(--cyan-glow); }
+            50% { text-shadow: 0 0 40px var(--cyan-accent), 0 0 60px var(--cyan-glow); }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Periodic table mini grid */
+        .periodic-mini {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            gap: 2px;
+            max-width: 800px;
+            margin: 1em auto;
+        }
+
+        .element-box {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5em;
+            transition: all 0.3s ease;
+        }
+
+        .element-box.highlight {
+            background: var(--cyan-accent);
+            color: var(--bg-dark);
+            font-weight: bold;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .element-box.empty {
+            background: transparent;
+            border: none;
+        }
+
+        /* Force diagram */
+        .force-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2em;
+            margin: 2em 0;
+        }
+
+        .force-arrow {
+            font-size: 3em;
+            animation: push 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes push {
+            0% { transform: translateX(-10px); }
+            100% { transform: translateX(10px); }
+        }
+
+        .force-arrow.left {
+            color: var(--orange-warning);
+        }
+
+        .force-arrow.right {
+            color: var(--cyan-accent);
+            animation-direction: alternate-reverse;
+        }
+
+        /* Nucleus visualization */
+        .nucleus {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--cyan-accent) 0%, var(--bg-dark) 70%);
+            margin: 1em auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            animation: vibrate 0.1s linear infinite;
+        }
+
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, 1px); }
+        }
+
+        .nucleus.stable {
+            animation: none;
+            background: radial-gradient(circle, var(--green-stable) 0%, var(--bg-dark) 70%);
+        }
+
+        /* Wave animation */
+        .wave-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 2em 0;
+        }
+
+        .wave-bar {
+            width: 8px;
+            height: 60px;
+            background: var(--cyan-accent);
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        /* Equation styling */
+        .equation {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.5em;
+            color: var(--cyan-accent);
+            text-align: center;
+            padding: 1em;
+            background: rgba(0, 229, 255, 0.05);
+            border-left: 3px solid var(--cyan-accent);
+            margin: 1em 0;
+        }
+
+        /* Stats box */
+        .stat-box {
+            display: inline-block;
+            padding: 0.5em 1em;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--cyan-accent);
+            margin: 0.5em;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--cyan-accent);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--gray-light);
+        }
+
+        /* Island visualization */
+        .island-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 40px);
+            gap: 4px;
+            justify-content: center;
+            margin: 1em auto;
+        }
+
+        .island-cell {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .island-cell.sea {
+            background: rgba(255, 107, 53, 0.3);
+            border: 1px solid var(--orange-warning);
+        }
+
+        .island-cell.island {
+            background: rgba(0, 255, 136, 0.3);
+            border: 1px solid var(--green-stable);
+            animation: glow-green 2s ease-in-out infinite;
+        }
+
+        @keyframes glow-green {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 136, 0.6); }
+        }
+
+        .island-cell.unknown {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* Title slide special */
+        .title-slide h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 0.5em;
+        }
+
+        .title-slide .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--gray-light);
+        }
+
+        /* Act markers */
+        .act-marker {
+            font-size: 0.7em;
+            color: var(--cyan-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5em;
+        }
+
+        /* Laser animation */
+        .laser-beam {
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--cyan-accent), transparent);
+            animation: laser-fire 0.5s ease-out infinite;
+            margin: 1em 0;
+        }
+
+        @keyframes laser-fire {
+            0% { opacity: 0; transform: scaleX(0); }
+            50% { opacity: 1; transform: scaleX(1); }
+            100% { opacity: 0; transform: scaleX(0); }
+        }
+
+        /* Final quote styling */
+        .final-quote {
+            font-size: 1.4em;
+            font-style: italic;
+            color: var(--white);
+            text-align: center;
+            padding: 2em;
+            border: 1px solid var(--cyan-accent);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .reveal h1 { font-size: 1.8em; }
+            .reveal h2 { font-size: 1.4em; }
+            .periodic-mini { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section class="title-slide">
+                <!-- Visual: Dark void with periodic table fading in from edges -->
+                <div class="atom-symbol glow">⚛</div>
+                <h1>Why Does the Periodic Table<br>Have a Maximum?</h1>
+                <p class="subtitle">The physics of atomic limits</p>
+                <aside class="notes">
+                    Opening shot. Dramatic pause. Let the question sink in before we begin.
+                </aside>
+            </section>
+
+            <!-- SLIDE 2: The Familiar Table -->
+            <section>
+                <!-- Visual: Full periodic table grid, softly glowing -->
+                <p class="act-marker">Act 1 — The Hook</p>
+                <h2>The Most Famous Chart in Science</h2>
+                <p>You've seen it a thousand times.</p>
+                <p>Classroom walls. Chemistry textbooks. Coffee mugs.</p>
+                <div style="text-align: center; font-size: 2em; margin-top: 1em; opacity: 0.6;">
+                    H He Li Be B C N O F Ne...
+                </div>
+                <aside class="notes">
+                    Here's the periodic table. You've seen it a thousand times—on classroom walls, chemistry textbooks, maybe a coffee mug.
+                </aside>
+            </section>
+
+            <!-- SLIDE 3: Zoom to Element 118 -->
+            <section>
+                <!-- Visual: Zoom animation to bottom-right corner, 118 pulses -->
+                <h2>Follow It to the Edge</h2>
+                <p>Past uranium <span class="accent">(92)</span></p>
+                <p>Past plutonium <span class="accent">(94)</span></p>
+                <p>All the way to...</p>
+                <div class="stat-box" style="display: block; width: fit-content; margin: 1em auto;">
+                    <div class="stat-number">118</div>
+                    <div class="stat-label">Oganesson (Og)</div>
+                </div>
+                <aside class="notes">
+                    But follow it to the bottom right corner. Past uranium. Past plutonium. All the way to element 118—Oganesson.
+                </aside>
+            </section>
+
+            <!-- SLIDE 4: The Question -->
+            <section>
+                <!-- Visual: Element 118 box with question mark appearing beside it -->
+                <h2>And Then... It Stops</h2>
+                <p style="font-size: 1.5em; text-align: center; margin: 1em 0;">
+                    <span class="accent">118</span> → <span class="warning">?</span>
+                </p>
+                <p style="text-align: center; font-size: 1.3em;">
+                    What force decides that atoms can only get <span class="accent">so big</span>?
+                </p>
+                <aside class="notes">
+                    And then... it stops. The most famous chart in science just... ends. Why? What force in the universe decides that atoms can only get so big?
+                </aside>
+            </section>
+
+            <!-- SLIDE 5: Atom Structure -->
+            <section>
+                <!-- Visual: Animated atom diagram - nucleus with orbiting electrons -->
+                <p class="act-marker">Act 2 — How Atoms Work</p>
+                <h2>A Tiny Solar System</h2>
+                <div class="nucleus" style="animation: none;">
+                    <span>⬡</span>
+                </div>
+                <p style="text-align: center;">
+                    <span class="accent">Nucleus:</span> protons + neutrons<br>
+                    <span class="accent">Cloud:</span> electrons in orbit
+                </p>
+                <aside class="notes">
+                    Every atom is a tiny solar system. At the center: a nucleus packed with protons and neutrons. Orbiting around it: a cloud of electrons.
+                </aside>
+            </section>
+
+            <!-- SLIDE 6: Atomic Number Z -->
+            <section>
+                <!-- Visual: Z counter incrementing with element symbols -->
+                <h2>The Atomic Number: Z</h2>
+                <p>The number of protons defines the element</p>
+                <div style="display: flex; justify-content: center; gap: 2em; margin: 1.5em 0;">
+                    <div class="stat-box">
+                        <div class="stat-number">1</div>
+                        <div class="stat-label">Hydrogen</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Carbon</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">79</div>
+                        <div class="stat-label">Gold</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    The number of protons—that's the atomic number, Z—defines what element you have. Hydrogen has 1. Carbon has 6. Gold has 79.
+                </aside>
+            </section>
+
+            <!-- SLIDE 7: Density Increases -->
+            <section>
+                <!-- Visual: Nucleus growing denser, compression animation -->
+                <h2>Incredible Density</h2>
+                <p>As Z increases, the nucleus gets denser.</p>
+                <p>More protons. More neutrons. Same tiny space.</p>
+                <div class="equation">
+                    Element 118: <span class="warning">230 billion</span> kg/cm³
+                </div>
+                <p style="text-align: center; font-size: 0.9em;">
+                    The density of a neutron star—inside an atom.
+                </p>
+                <aside class="notes">
+                    As Z increases, something remarkable happens. The nucleus gets denser. By element 118, it's about 230 billion kilograms per cubic centimeter. That's neutron star density.
+                </aside>
+            </section>
+
+            <!-- SLIDE 8: The War - Coulomb Repulsion -->
+            <section>
+                <!-- Visual: Protons pushing apart, red arrows -->
+                <p class="act-marker">Act 3 — The War Inside</p>
+                <h2>The Problem: <span class="warning">Coulomb Repulsion</span></h2>
+                <p>Protons are all positively charged.</p>
+                <p>Positive charges <span class="warning">repel</span> each other.</p>
+                <div class="equation">
+                    Repulsion ∝ Z²
+                </div>
+                <p style="text-align: center;">
+                    Double the protons → <span class="warning">quadruple</span> the repulsion
+                </p>
+                <aside class="notes">
+                    But here's the problem. Protons are all positively charged. And positive charges repel each other. This is Coulomb repulsion—and it scales as Z squared.
+                </aside>
+            </section>
+
+            <!-- SLIDE 9: The War - Strong Force -->
+            <section>
+                <!-- Visual: Force tug-of-war diagram -->
+                <h2>The Hero: <span class="accent">Strong Nuclear Force</span></h2>
+                <div class="force-diagram">
+                    <span class="force-arrow left">←</span>
+                    <div class="nucleus">⬡⬡</div>
+                    <span class="force-arrow right">→</span>
+                </div>
+                <p style="text-align: center;">
+                    Most powerful force in nature<br>
+                    But only works at <span class="accent">~1 femtometer</span>
+                </p>
+                <aside class="notes">
+                    What holds it together? The strong nuclear force. It's the most powerful force in nature—but it only works at extremely short range. About one femtometer.
+                </aside>
+            </section>
+
+            <!-- SLIDE 10: The Limit -->
+            <section>
+                <!-- Visual: Large nucleus with distant protons, weak force lines -->
+                <h2>The Breaking Point</h2>
+                <p>In large nuclei:</p>
+                <ul>
+                    <li>Distant protons <span class="accent">barely feel</span> the strong force</li>
+                    <li>But they <span class="warning">definitely feel</span> Coulomb repulsion</li>
+                </ul>
+                <div class="nucleus" style="width: 200px; height: 200px; background: radial-gradient(circle, var(--orange-warning) 0%, var(--bg-dark) 70%);">
+                    💥
+                </div>
+                <p style="text-align: center;">Eventually, the nucleus <span class="warning">tears itself apart</span>.</p>
+                <aside class="notes">
+                    As nuclei get larger, protons on opposite sides can barely feel each other's strong force—but they definitely feel the Coulomb repulsion. Eventually, the nucleus tears itself apart.
+                </aside>
+            </section>
+
+            <!-- SLIDE 11: Fusion Introduction -->
+            <section>
+                <!-- Visual: NIF facility, laser beams converging -->
+                <p class="act-marker">Act 4 — Fusion as Edge Case</p>
+                <h2>How We Make Heavy Elements</h2>
+                <p>December 2022: National Ignition Facility achieves <span class="accent">fusion ignition</span></p>
+                <div class="stat-box">
+                    <div class="stat-number">192</div>
+                    <div class="stat-label">laser beams</div>
+                </div>
+                <div class="laser-beam"></div>
+                <div class="laser-beam" style="animation-delay: 0.2s;"></div>
+                <div class="laser-beam" style="animation-delay: 0.4s;"></div>
+                <aside class="notes">
+                    This brings us to fusion—how we make heavy elements. In December 2022, the National Ignition Facility achieved fusion ignition. They fired 192 laser beams at a tiny capsule.
+                </aside>
+            </section>
+
+            <!-- SLIDE 12: D-T Reaction -->
+            <section>
+                <!-- Visual: D + T fusion animation, energy release -->
+                <h2>The D-T Reaction</h2>
+                <p>Deuterium + Tritium → Helium + Neutron + <span class="accent">Energy</span></p>
+                <div style="text-align: center; font-size: 2em; margin: 1em 0;">
+                    ²H + ³H → ⁴He + n + 17.6 MeV
+                </div>
+                <p style="text-align: center;">
+                    More energy out than went in.<br>
+                    A <span class="accent">cascade reaction</span>, sustained by its own heat.
+                </p>
+                <aside class="notes">
+                    The fuel compressed. Nuclei fused. And crucially—more energy came out than went in. A cascade reaction, sustained by its own heat.
+                </aside>
+            </section>
+
+            <!-- SLIDE 13: The Catch -->
+            <section>
+                <!-- Visual: Simple nuclei vs complex, difficulty scaling -->
+                <h2>The Catch</h2>
+                <p>D-T works because they're <span class="accent">simple</span>:</p>
+                <div style="display: flex; justify-content: center; gap: 2em; margin: 1em 0;">
+                    <div class="stat-box">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">nucleons (D)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">nucleons (T)</div>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 1.2em;">
+                    Heavy elements? Coulomb repulsion makes fusion<br><span class="warning">nearly impossible</span>.
+                </p>
+                <aside class="notes">
+                    But here's what most people miss: this only works because deuterium and tritium are simple. Two or three nucleons each. Try to fuse heavy elements and Coulomb repulsion makes it nearly impossible.
+                </aside>
+            </section>
+
+            <!-- SLIDE 14: Resonance Introduction -->
+            <section>
+                <!-- Visual: Water drop oscillating, wave patterns -->
+                <p class="act-marker">Act 5 — The Oscillation Key</p>
+                <h2>What If Not Brute Force?</h2>
+                <p style="font-size: 1.4em; text-align: center;">
+                    <span class="warning">Smashing</span> → <span class="accent">Resonance</span>
+                </p>
+                <div class="wave-container">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+                <p style="text-align: center;">
+                    Nuclei can <span class="accent">vibrate</span>—like a drop of water oscillating.
+                </p>
+                <aside class="notes">
+                    So if brute force can't work, what about resonance? This is where things get fascinating. Nuclei can vibrate—like a drop of water oscillating in slow motion.
+                </aside>
+            </section>
+
+            <!-- SLIDE 15: Giant Dipole Resonance -->
+            <section>
+                <!-- Visual: Protons and neutrons sloshing opposite directions -->
+                <h2>Giant Dipole Resonance</h2>
+                <p>Protons slosh one way ←</p>
+                <p>Neutrons slosh the other →</p>
+                <div class="equation">
+                    Frequency: 10-20 MHz (heavy nuclei)
+                </div>
+                <div class="nucleus" style="animation: vibrate 0.05s linear infinite;">
+                    ⬡
+                </div>
+                <aside class="notes">
+                    This is called the Giant Dipole Resonance. The protons slosh one way, the neutrons slosh the other. It happens at specific frequencies—around 10 to 20 megahertz for heavy nuclei.
+                </aside>
+            </section>
+
+            <!-- SLIDE 16: Thorium-229 Bridge -->
+            <section>
+                <!-- Visual: Th-229 energy level diagram, laser arrow -->
+                <h2>The Thorium-229 Bridge</h2>
+                <p>A nuclear transition at just <span class="accent">8.4 eV</span></p>
+                <p>Low enough to reach with a <span class="accent">laser</span>.</p>
+                <div style="text-align: center; margin: 1em 0; font-size: 2em;">
+                    🔬 → ⚛ → 💡
+                </div>
+                <p style="text-align: center;">
+                    A direct line from <span class="accent">photons</span> to <span class="accent">nuclear states</span>.
+                </p>
+                <aside class="notes">
+                    And there's a remarkable bridge: Thorium-229 has a nuclear transition at just 8.4 electron volts—low enough to reach with a laser. A direct line from photons to nuclear states.
+                </aside>
+            </section>
+
+            <!-- SLIDE 17: The Question -->
+            <section>
+                <!-- Visual: Comparison - hammer vs tuning fork -->
+                <h2>Resonance Over Brute Force</h2>
+                <p style="font-size: 1.3em; text-align: center;">
+                    What if we could <span class="accent">coax</span> nuclei into fusion<br>
+                    through carefully timed oscillations?
+                </p>
+                <div style="display: flex; justify-content: center; gap: 3em; margin: 1.5em 0; font-size: 2em;">
+                    <span class="warning">🔨</span>
+                    <span style="color: var(--gray-light);">vs</span>
+                    <span class="accent">🎵</span>
+                </div>
+                <aside class="notes">
+                    What if, instead of smashing nuclei together, we could coax them into fusion through carefully timed oscillations? Resonance over brute force.
+                </aside>
+            </section>
+
+            <!-- SLIDE 18: Island of Stability -->
+            <section>
+                <!-- Visual: Nuclear chart with island highlighted -->
+                <p class="act-marker">Act 6 — The Horizon</p>
+                <h2>The Island of Stability</h2>
+                <p>Theory predicts a region around elements <span class="accent">120-126</span></p>
+                <div class="island-grid">
+                    <div class="island-cell sea">114</div>
+                    <div class="island-cell sea">115</div>
+                    <div class="island-cell sea">116</div>
+                    <div class="island-cell sea">117</div>
+                    <div class="island-cell sea">118</div>
+                    <div class="island-cell unknown">119</div>
+                    <div class="island-cell unknown">120</div>
+                    <div class="island-cell unknown">121</div>
+                    <div class="island-cell island">122</div>
+                    <div class="island-cell island">123</div>
+                    <div class="island-cell island">124</div>
+                    <div class="island-cell island">125</div>
+                    <div class="island-cell island">126</div>
+                    <div class="island-cell unknown">127</div>
+                </div>
+                <p style="text-align: center;">
+                    <span class="stable">Magic numbers</span>. Closed shells. Unusual stability.
+                </p>
+                <aside class="notes">
+                    Theory predicts an Island of Stability—a region around elements 120 to 126 where certain combinations of protons and neutrons create closed shells. Magic numbers. Unusual stability.
+                </aside>
+            </section>
+
+            <!-- SLIDE 19: The Unknown -->
+            <section>
+                <!-- Visual: Question marks beyond 118, fading into darkness -->
+                <h2>We've Never Reached It</h2>
+                <p>Every element beyond 118 exists only in <span class="warning">theory</span>.</p>
+                <div style="text-align: center; font-size: 2em; margin: 1em 0;">
+                    118 → <span style="opacity: 0.5">119</span> → <span style="opacity: 0.3">120</span> → <span style="opacity: 0.1">...</span>
+                </div>
+                <p style="text-align: center;">
+                    But if oscillation-based techniques work...<br>
+                    we might finally get there.
+                </p>
+                <aside class="notes">
+                    We've never reached it. Every element beyond 118 exists only in theory. But if oscillation-based techniques work, we might finally get there.
+                </aside>
+            </section>
+
+            <!-- SLIDE 20: The Horizon -->
+            <section>
+                <!-- Visual: Periodic table extending into light, horizon metaphor -->
+                <h2>Not a Wall—A Horizon</h2>
+                <p style="font-size: 1.2em;">
+                    The periodic table doesn't end because nature <span class="warning">forbids</span> bigger atoms.
+                </p>
+                <p style="font-size: 1.2em;">
+                    It ends because we haven't yet learned <span class="accent">how to build them</span>.
+                </p>
+                <div class="nucleus stable" style="margin-top: 1.5em;">
+                    ∞
+                </div>
+                <aside class="notes">
+                    The periodic table doesn't end because nature forbids bigger atoms. It ends because we haven't yet learned how to build them. The maximum isn't a wall—it's a horizon.
+                </aside>
+            </section>
+
+            <!-- SLIDE 21: Final Quote -->
+            <section>
+                <!-- Visual: Text fades in on dark background, dramatic -->
+                <div class="final-quote">
+                    "The periodic table ends where our methods end—<br>not where atoms do."
+                </div>
+                <aside class="notes">
+                    [Hold on this final thought. Let it resonate.]
+                </aside>
+            </section>
+
+            <!-- SLIDE 22: Credits -->
+            <section>
+                <!-- Visual: Clean credits, links -->
+                <h2 style="text-align: center;">Learn More</h2>
+                <p style="text-align: center; font-size: 1em;">
+                    <span class="accent">github.com/coywolffuturist/why-does-the-periodic-table-have-a-maximum</span>
+                </p>
+                <div style="text-align: center; margin-top: 2em; opacity: 0.5;">
+                    ⚛
+                </div>
+                <aside class="notes">
+                    End card with repository link for deeper exploration.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'fade',
+            transitionSpeed: 'slow',
+            backgroundTransition: 'fade',
+            controls: true,
+            progress: true,
+            center: false,
+            width: 1280,
+            height: 720,
+            margin: 0.1,
+            showNotes: false
+        });
+    </script>
+</body>
+</html>
